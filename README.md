@@ -11,17 +11,14 @@ Buxfer API is a Python library that provides an interface to Buxfer http API to 
 
 No options or using **-h** will trigger the following message
 
-Usage: buxfer [options]
+`Usage: buxfer [options]`
 
-`
-Options:
+`Options:`
 
-  -h, --help          show this help message and exit
+  `-h, --help          show this help message and exit`
+  `-s, --show-balance  Show accounts balance`
+  `-d, --daemon        Launch process as daemon`
 
-  -s, --show-balance  Show accounts balance
-
-  -d, --daemon        Launch process as daemon
-`
 
 ### show balance
 
