@@ -39,6 +39,9 @@ class BuxferAPI( object ):
         token = response.json()
         self.token = token['response']['token']
 
+    def logout(self):
+        pass
+
     def get_accounts(self):
         response = self.__get_request('accounts')
         return response['response']['accounts']
