@@ -1,25 +1,22 @@
 #!/usr/bin/env python
 
-from api import buxfer
-from pybles import pybles
+from optparse import OptionParser
 
-import settings
+from buxfer_commands.show_balance import ShowBalance
 
 
-ba = buxfer.BuxferAPI()
-ba.login(user = settings.USER, 
-    password = settings.PASS)
-accounts =  ba.get_accounts()
+parser = OptionParser()
+parser.add_option('-s', '--show-balance', dest='show_balance',
+    help='Show accounts balance', action='store_false')
+parser.add_option('-d', '--daemon', dest='daemon',
+    help="Launch process as daemon", action='store_false')
 
-PB = pybles.Pyble()
 
-PB.add_column('CUENTA')
-PB.add_column('MONEDA')
-PB.add_column('MONTO')
+(options, args) = parser.parse_args()
 
-for acc in accounts:
-    PB.add_line([acc['key-account']['name'],
-                 acc['key-account']['currency'],
-                 acc['key-account']['balance']])
-
-PB.show_table()
+if options.daemon is None and \
+    options.show_balance is None:
+    parser.print_help()
+elif options.daemon is False and \
+    options.show_balance is False:
+    print "Can't use daemon and balance at the same time"
