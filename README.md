@@ -15,8 +15,11 @@ Usage: buxfer [options]
 
 `
 Options:
+
   -h, --help          show this help message and exit
+
   -s, --show-balance  Show accounts balance
+
   -d, --daemon        Launch process as daemon
 `
 
