@@ -3,7 +3,7 @@
 from optparse import OptionParser
 
 from buxfer_commands.show_balance import ShowBalance
-
+from buxfer_commands.daemon import BuxferDaemon
 
 parser = OptionParser()
 parser.add_option('-s', '--show-balance', dest='show_balance',
@@ -13,7 +13,6 @@ parser.add_option('-d', '--daemon', dest='daemon',
 
 
 (options, args) = parser.parse_args()
-sb = ShowBalance()
 
 if options.daemon is None and \
     options.show_balance is None:
@@ -23,7 +22,9 @@ elif options.daemon is False and \
     print "Can't use daemon and balance at the same time"
 elif options.daemon is None and \
     options.show_balance is False:
+    sb = ShowBalance()
     sb.show_accounts()
 elif options.daemon is False and \
     options.show_balance is None:
-    print "daemon"
+    bd = BuxferDaemon()
+    bd.send_report()
