@@ -1,20 +1,13 @@
-from api import buxfer
 from pybles import pybles
 
 import settings
+from command import BuxferCommand
 
 
-class ShowBalance( object ):
-
-    def __do_connect(self):
-        ba = buxfer.BuxferAPI()
-        ba.login(user = settings.USER, 
-            password = settings.PASS)
-
-        return ba
+class ShowBalance( BuxferCommand ):
 
     def show_accounts(self):
-        connection = self.__do_connect()
+        connection = self.do_connect()
         accounts = connection.get_accounts()
 
         PB = pybles.Pyble()

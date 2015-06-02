@@ -1,20 +1,13 @@
 import smtplib
 
 import settings
-from api import buxfer
+from command import BuxferCommand
 
 
-class BuxferDaemon( object ):
-
-    def __do_connect(self):
-        ba = buxfer.BuxferAPI()
-        ba.login(user = settings.USER,
-            password = settings.PASS)
-
-        return ba
+class BuxferDaemon( BuxferCommand ):
 
     def send_report(self):
-        connection = self.__do_connect()
+        connection = self.do_connect()
         accounts = connection.get_accounts()
 
         msg = 'Subject: Reporte de gastos\n'
