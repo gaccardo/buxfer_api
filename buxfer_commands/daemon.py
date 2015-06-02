@@ -17,10 +17,17 @@ class BuxferDaemon( object ):
         connection = self.__do_connect()
         accounts = connection.get_accounts()
 
+        msg = 'Subject: Reporte de gastos\n'
+        msg += 'Reporte de gastos\n\n'
+
+        for acc in accounts:
+            msg += "%s: $%s\n" % (acc['key-account']['name'],
+                acc['key-account']['balance'])
+
         server = smtplib.SMTP('smtp.gmail.com:587')
         server.starttls()
         server.login(settings.EMAIL_USER, 
             settings.EMAIL_PASS)
         server.sendmail(settings.SENDER, 
-            settings.RECIPIENTS, 'a')
+            settings.RECIPIENTS, msg)
         server.quit()
