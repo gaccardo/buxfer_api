@@ -13,6 +13,7 @@ parser.add_option('-d', '--daemon', dest='daemon',
 
 
 (options, args) = parser.parse_args()
+sb = ShowBalance()
 
 if options.daemon is None and \
     options.show_balance is None:
@@ -20,3 +21,9 @@ if options.daemon is None and \
 elif options.daemon is False and \
     options.show_balance is False:
     print "Can't use daemon and balance at the same time"
+elif options.daemon is None and \
+    options.show_balance is False:
+    sb.show_accounts()
+elif options.daemon is False and \
+    options.show_balance is None:
+    print "daemon"
