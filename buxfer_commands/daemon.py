@@ -17,8 +17,12 @@ class BuxferDaemon( BuxferCommand ):
             msg += "%s: $%s\n" % (acc['key-account']['name'],
                 acc['key-account']['balance'])
 
-        server = smtplib.SMTP('smtp.gmail.com:587')
-        server.starttls()
+        server = smtplib.SMTP('%s:%s' % (settings.SMTPSERVER,
+            settings.SMTPPORT))
+
+        if settings.TLS:
+            server.starttls()
+            
         server.login(settings.EMAIL_USER, 
             settings.EMAIL_PASS)
         server.sendmail(settings.SENDER, 
