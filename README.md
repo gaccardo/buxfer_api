@@ -9,6 +9,8 @@ Buxfer API is a Python library that provides an interface to Buxfer http API to 
 
 ### help
 
+`dd`
+
 ### show balance
 
 ### daemon
