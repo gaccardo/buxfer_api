@@ -18,6 +18,6 @@ class ShowBalance( BuxferCommand ):
 
         for acc in accounts:
             PB.add_line([acc.name, acc.currency, 
-                acc.balance])
+                "$ %.2f" % acc.balance])
 
         PB.show_table()
