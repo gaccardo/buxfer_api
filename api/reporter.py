@@ -69,8 +69,9 @@ class Reporter( object ):
 
     def __translate_type(self, tipo):
         types = dict()
-        types['income'] = 'ingreso'
-        types['expense'] = 'gasto'
+        types['income']   = 'ingreso'
+        types['expense']  = 'gasto'
+        types['transfer'] = 'tranferencia'
 
         return types[tipo]
  
@@ -88,6 +89,8 @@ class Reporter( object ):
                 self.c.setFillColorRGB(0,255,0)
             elif tipo == 'gasto':
                 self.c.setFillColorRGB(255,0,0)
+            elif tipo == 'tranferencia':
+                self.c.setFillColorRGB(0,0,255)
             self.c.drawString(35, self.l, '%s %s %s $%.2f | %s' % \
                 (tra.date, tipo.upper(), tra.account,
                  tra.amount, tra.description))
