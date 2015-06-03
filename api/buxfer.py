@@ -69,10 +69,12 @@ class BuxferAPI( object ):
                 account=tra['accountName'], 
                 expense=tra['expenseAmount'], 
                 amount=tra['amount'], 
-                t_type=tra['transactionType']))
+                t_type=tra['transactionType'],
+                date=tra['normalizedDate']))
 
         return transactions_list
 
     def get_transactions(self):
         response = self.__get_request('transactions')
+        #import ipdb;ipdb.set_trace()
         return self.__from_json_transactions_to_objects(response)

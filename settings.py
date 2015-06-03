@@ -11,4 +11,7 @@ EMAIL_USER = 'gaccardo@gmail.com'
 EMAIL_PASS = 'PedroipCop1987GuIdO1987'
 TLS = True
 SEND_EMAIL = True
-DEBUG_EMAIL = False
+DEBUG_EMAIL = True
+
+REPORT_TMP = ''
+REPORT_NAME = 'reporte_de_gastos.pdf'

@@ -3,6 +3,7 @@ import math
 
 import settings
 from command import BuxferCommand
+from api.reporter import Reporter
 
 
 class BuxferDaemon( BuxferCommand ):
@@ -14,18 +15,8 @@ class BuxferDaemon( BuxferCommand ):
         connection = self.do_connect()
         accounts = connection.get_accounts()
         transactions = connection.get_transactions()
-
-        msg = 'Subject: Reporte de gastos\n'
-        msg += 'Reporte de gastos\n\n'
-        for acc in accounts:
-            msg += "%s: $%s\n" % (acc.name,
-                '%.2f' % acc.balance)
-
-        msg += "\nTransacciones\n\n"
-        for tra in transactions:
-            msg += "%s: $%.2f %s\n" % (tra.description, 
-                math.fabs(tra.expense), tra.t_type.upper())
-
+        reporter = Reporter(accounts, transactions)
+        reporter.generate_report()
 
         if not settings.DEBUG_EMAIL:
             server = smtplib.SMTP('%s:%s' % (settings.SMTPSERVER,
@@ -39,5 +30,3 @@ class BuxferDaemon( BuxferCommand ):
             server.sendmail(settings.SENDER, 
                 settings.RECIPIENTS, msg)
             server.quit()
-        else:
-            print msg
