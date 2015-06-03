@@ -4,6 +4,7 @@ import settings
 from pybles import pybles
 
 from account import Account
+from transaction import Transaction
 
 
 class ErrorWithBuxferAPI( Exception ): pass
@@ -60,8 +61,18 @@ class BuxferAPI( object ):
         response = self.__get_request('accounts')
         return self.__from_json_accounts_to_objects(response)
 
+    def __from_json_transactions_to_objects(self, transactions):
+        transactions_list = list()
+        for tra in transactions['response']['transactions']:
+            tra = tra['key-transaction']
+            transactions_list.append(Transaction(description=tra['description'], 
+                account=tra['accountName'], 
+                expense=tra['expenseAmount'], 
+                amount=tra['amount'], 
+                t_type=tra['transactionType']))
+
+        return transactions_list
+
     def get_transactions(self):
         response = self.__get_request('transactions')
-        return response['response']['transactions']
-
-    
+        return self.__from_json_transactions_to_objects(response)
