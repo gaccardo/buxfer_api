@@ -14,8 +14,8 @@ class BuxferDaemon( BuxferCommand ):
         msg += 'Reporte de gastos\n\n'
 
         for acc in accounts:
-            msg += "%s: $%s\n" % (acc['key-account']['name'],
-                acc['key-account']['balance'])
+            msg += "%s: $%s\n" % (acc.name,
+                '%.2f' % acc.balance)
 
         server = smtplib.SMTP('%s:%s' % (settings.SMTPSERVER,
             settings.SMTPPORT))
