@@ -11,4 +11,4 @@ EMAIL_USER = 'gaccardo@gmail.com'
 EMAIL_PASS = 'PedroipCop1987GuIdO1987'
 TLS = True
 SEND_EMAIL = True
-DEBUG_EMAIL = True
+DEBUG_EMAIL = False
