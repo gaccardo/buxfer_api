@@ -29,7 +29,6 @@ class BuxferDaemon( BuxferCommand ):
         hoy = datetime.datetime.now()
         hoy = hoy.strftime('%d/%m/%Y')
 
-        return
         msg = MIMEMultipart()
         msg['From'] = settings.SENDER
         msg['To'] = ', '.join(settings.RECIPIENTS)
