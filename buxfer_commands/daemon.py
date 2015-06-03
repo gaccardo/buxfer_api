@@ -17,19 +17,9 @@ from api.reporter import Reporter
 
 class BuxferDaemon( BuxferCommand ):
 
-    def send_report(self):
-        if not settings.SEND_EMAIL:
-            return False
-
-        connection = self.do_connect()
-        accounts = connection.get_accounts()
-        transactions = connection.get_transactions()
-        reporter = Reporter(accounts, transactions)
-        reporter.generate_report()
+    def __send_pdf(self):
         hoy = datetime.datetime.now()
         hoy = hoy.strftime('%d/%m/%Y')
-
-
         msg = MIMEMultipart()
         msg['From'] = settings.SENDER
         msg['To'] = ', '.join(settings.RECIPIENTS)
@@ -53,3 +43,15 @@ class BuxferDaemon( BuxferCommand ):
         server.sendmail(settings.SENDER, settings.RECIPIENTS,
             msg.as_string())
         server.close()
+
+    def send_report(self):
+        if not settings.SEND_EMAIL:
+            return False
+
+        connection = self.do_connect()
+        accounts = connection.get_accounts()
+        transactions = connection.get_transactions()
+        reporter = Reporter(accounts, transactions.reverse())
+        reporter.generate_report()
+
+        self.__send_pdf()
