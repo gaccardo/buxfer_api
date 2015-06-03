@@ -93,7 +93,6 @@ class Reporter( object ):
                  tra.amount, tra.description))
             self.l -= decrease
 
-
     def generate_report(self):
         self.__prepare_document()
         self.__generate_header()
