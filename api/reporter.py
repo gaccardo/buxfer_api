@@ -1,7 +1,11 @@
 import os
 
 from reportlab.pdfgen import canvas
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from reportlab.graphics.shapes import Drawing
+from reportlab.graphics.charts.piecharts import Pie
+from reportlab.graphics.charts.legends import Legend
+from reportlab.lib.colors import black, red, purple, green, maroon, brown, pink, white, HexColor
+from reportlab.graphics import renderPDF
 import datetime
 
 import settings
@@ -96,9 +100,66 @@ class Reporter( object ):
                  tra.amount, tra.description))
             self.l -= decrease
 
+    def __add_graph(self):
+        drawing = Drawing(200, 100)
+        data = list()
+        labels = list()
+
+        for acc in self.accounts:
+            balance = acc.balance
+            if acc.currency == 'USD':
+                balance = balance * settings.DOLAR
+
+            data.append(acc.balance)
+            labels.append(acc.name)
+
+        pie = Pie()
+        pie.x = 280
+        pie.y = 630
+        pie.height = 100
+        pie.width = 100
+        pie.data = data
+        pie.labels = labels
+        pie.simpleLabels = 1
+        pie.slices.strokeWidth = 1
+        pie.slices.strokeColor = white
+        pie.slices.label_visible = 0
+
+        legend = Legend()
+        legend.x = 400
+        legend.y = 680
+        legend.dx              = 8
+        legend.dy              = 8
+        legend.fontName        = 'Helvetica'
+        legend.fontSize        = 7
+        legend.boxAnchor       = 'w'
+        legend.columnMaximum   = 10
+        legend.strokeWidth     = 1
+        legend.strokeColor     = black
+        legend.deltax          = 75
+        legend.deltay          = 10
+        legend.autoXPadding    = 5
+        legend.yGap            = 0
+        legend.dxTextSpace     = 5
+        legend.alignment       = 'right'
+        legend.dividerLines    = 1|2|4
+        legend.dividerOffsY    = 4.5
+        legend.subCols.rpad    = 30
+        n = len(pie.data)
+        legend.colorNamePairs = [(pie.slices[i].fillColor, 
+            (pie.labels[i][0:20],'$%0.2f' % pie.data[i])) for i in xrange(n)]
+
+
+        drawing.add(pie)
+        drawing.add(legend)
+        x, y = 0, 0
+        renderPDF.draw(drawing, self.c, x, y, showBoundary=False)
+
     def generate_report(self):
         self.__prepare_document()
         self.__generate_header()
         self.__accounts_amount()
         self.__transactions()
+        self.__add_graph()
+        self.c.showPage()
         self.c.save()
