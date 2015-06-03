@@ -24,15 +24,15 @@ class BuxferDaemon( BuxferCommand ):
         msg['From'] = settings.SENDER
         msg['To'] = ', '.join(settings.RECIPIENTS)
         msg['Subject'] = "Estado de cuentas: %s" % hoy
-        
-        reporte = os.path.join(settings.REPORT_TMP, 
+
+        reporte = os.path.join(settings.REPORT_TMP,
             settings.REPORT_NAME)
 
         part = MIMEBase('application', "octec-stream")
         part.set_payload(open(reporte, "rb").read())
         Encoders.encode_base64(part)
 
-        part.add_header('Content-Disposition', 
+        part.add_header('Content-Disposition',
             'attachment; filename="%s"' % basename(reporte))
         msg.attach(part)
 
@@ -51,7 +51,7 @@ class BuxferDaemon( BuxferCommand ):
         connection = self.do_connect()
         accounts = connection.get_accounts()
         transactions = connection.get_transactions()
-        reporter = Reporter(accounts, transactions.reverse())
+        reporter = Reporter(accounts, transactions)
         reporter.generate_report()
 
         self.__send_pdf()
