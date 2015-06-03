@@ -17,8 +17,7 @@ class ShowBalance( BuxferCommand ):
         PB.add_column('MONTO')
 
         for acc in accounts:
-            PB.add_line([acc['key-account']['name'],
-                         acc['key-account']['currency'],
-                         acc['key-account']['balance']])
+            PB.add_line([acc.name, acc.currency, 
+                "$ %.2f" % acc.balance])
 
         PB.show_table()
