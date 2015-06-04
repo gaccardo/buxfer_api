@@ -45,13 +45,11 @@ class BuxferDaemon( BuxferCommand ):
         server.close()
 
     def send_report(self):
-        if not settings.SEND_EMAIL:
-            return False
-
         connection = self.do_connect()
         accounts = connection.get_accounts()
         transactions = connection.get_transactions()
         reporter = Reporter(accounts, transactions)
         reporter.generate_report()
 
-        self.__send_pdf()
+        if settings.SEND_EMAIL:
+            self.__send_pdf()
