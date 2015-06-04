@@ -77,7 +77,7 @@ class Reporter( object ):
         self.l -= 20
         self.c.setFont('Courier', 14)
         self.c.drawString(30, self.l, 'Totales por moneda')
-        self.l -= 15
+        self.l -= 17
         self.c.setFont('Courier', 11)
 
         totals = self.__get_totals_by_currency()
