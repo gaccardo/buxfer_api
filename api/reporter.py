@@ -4,8 +4,11 @@ from reportlab.pdfgen import canvas
 from reportlab.graphics.shapes import Drawing
 from reportlab.graphics.charts.piecharts import Pie
 from reportlab.graphics.charts.legends import Legend
-from reportlab.lib.colors import black, red, purple, green, maroon, brown, pink, white, HexColor
+from reportlab.lib.colors import black, red, purple, green, \
+    maroon, brown, pink, white, HexColor
 from reportlab.graphics import renderPDF
+from reportlab.platypus import Table, TableStyle
+from reportlab.lib.units import cm
 import datetime
 
 import settings
@@ -48,20 +51,33 @@ class Reporter( object ):
     def __accounts_amount(self):
         self.c.setFont('Courier', 14)
         self.c.drawString(30, 750, 'Cuentas')
+        data = [['Cuenta', 'Moneda', 'Saldo']]
 
-        line_number = 735
-        decrease = 15
-        self.c.setFont('Courier', 11)
+        self.l = 630
+        
+        #decrease = 15
+        #self.c.setFont('Courier', 11)
         for acc in self.accounts:
-            self.c.drawString(35, line_number, "%s (%s): $%.2f" % \
-                (acc.name, acc.currency, acc.balance))
-            line_number = line_number - decrease
+            data.append([acc.name, acc.currency, 
+                '$%.2f' % acc.balance])
 
-        self.l = line_number
+        t = Table(data)
+        t.setStyle(TableStyle([('INNERGRID', (0,0), (-1,-1), 0.25, black),
+            ('BOX', (0,0), (-1,-1), 0.25, black),
+            ('FONTNAME', (0,0), (-1,0), 'Courier-Bold'),
+            ('BACKGROUND', (0,0), (-1,0), HexColor('#efeded')),
+            ('BACKGROUND', (0,0), (0,-1), HexColor('#efeded')),
+            ('FONTSIZE', (0,0), (-1,0), 12),
+            ('FONTSIZE', (0,1), (-1,-1), 8),
+            ('FONTNAME', (0,1), (-1,-1), 'Courier')]))
+
+        t.wrapOn(self.c, 30, self.l)
+        t.drawOn(self.c, 30, self.l)
+
         self.l -= 20
         self.c.setFont('Courier', 14)
         self.c.drawString(30, self.l, 'Totales por moneda')
-        self.l -= 15
+        self.l -= 17
         self.c.setFont('Courier', 11)
 
         totals = self.__get_totals_by_currency()
@@ -84,21 +100,25 @@ class Reporter( object ):
         self.c.setFont('Courier', 14)
         self.c.drawString(30, self.l, 'Movimientos')
 
-        decrease = 15
-        self.l -= 15
-        self.c.setFont('Courier', 10)
+        data = [['Fecha', 'Tipo', 'Cuenta', 'Monto', 'Description']]
+
         for tra in self.transactions:
             tipo = self.__translate_type(tra.t_type)
-            if tipo == 'ingreso':
-                self.c.setFillColorRGB(0,255,0)
-            elif tipo == 'gasto':
-                self.c.setFillColorRGB(255,0,0)
-            elif tipo == 'tranferencia':
-                self.c.setFillColorRGB(0,0,255)
-            self.c.drawString(35, self.l, '%s %s %s $%.2f | %s' % \
-                (tra.date, tipo.upper(), tra.account,
-                 tra.amount, tra.description))
-            self.l -= decrease
+            data.append([tra.date, tipo.upper(), tra.account,
+                '$%.2f' % tra.amount, tra.description])
+
+        self.l -= len(data) * 19
+        t = Table(data)
+        t.setStyle(TableStyle([('INNERGRID', (0,0), (-1,-1), 0.25, black),
+            ('BOX', (0,0), (-1,-1), 0.25, black),
+            ('FONTNAME', (0,0), (-1,0), 'Courier-Bold'),
+            ('BACKGROUND', (0,0), (-1,0), HexColor('#efeded')),
+            ('BACKGROUND', (0,0), (0,-1), HexColor('#efeded')),
+            ('FONTSIZE', (0,0), (-1,0), 12),
+            ('FONTSIZE', (0,1), (-1,-1), 8),
+            ('FONTNAME', (0,1), (-1,-1), 'Courier')]))
+        t.wrapOn(self.c, 30, self.l)
+        t.drawOn(self.c, 30, self.l)
 
     def __add_graph(self):
         drawing = Drawing(200, 100)
