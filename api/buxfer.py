@@ -6,6 +6,7 @@ from pybles import pybles
 from account import Account
 from transaction import Transaction
 
+requests.packages.urllib3.disable_warnings()
 
 class ErrorWithBuxferAPI( Exception ): pass
 
@@ -20,7 +21,7 @@ class BuxferAPI( object ):
         self.token = None
 
     def __get_request(self, resource):
-        url = "%s/%s?token=%s" % (self.base_url, 
+        url = "%s/%s?token=%s" % (self.base_url,
             resource, self.token)
         response = requests.get(url)
 
@@ -49,10 +50,10 @@ class BuxferAPI( object ):
         accounts_list = list()
         for acc in accounts['response']['accounts']:
             acc = acc['key-account']
-            accounts_list.append(Account(currency=acc['currency'], 
-                balance=acc['balance'], 
-                id=acc['id'], 
-                bank=acc['bank'], 
+            accounts_list.append(Account(currency=acc['currency'],
+                balance=acc['balance'],
+                id=acc['id'],
+                bank=acc['bank'],
                 name=acc['name']))
 
         return accounts_list
@@ -65,10 +66,10 @@ class BuxferAPI( object ):
         transactions_list = list()
         for tra in transactions['response']['transactions']:
             tra = tra['key-transaction']
-            transactions_list.append(Transaction(description=tra['description'], 
-                account=tra['accountName'], 
-                expense=tra['expenseAmount'], 
-                amount=tra['amount'], 
+            transactions_list.append(Transaction(description=tra['description'],
+                account=tra['accountName'],
+                expense=tra['expenseAmount'],
+                amount=tra['amount'],
                 t_type=tra['transactionType'],
                 date=tra['normalizedDate']))
 
