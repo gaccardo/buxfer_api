@@ -9,6 +9,7 @@ from reportlab.lib.colors import black, red, purple, green, \
 from reportlab.graphics import renderPDF
 from reportlab.platypus import Table, TableStyle
 from reportlab.lib.units import cm
+from reportlab.platypus import PageBreak
 import datetime
 
 import settings
@@ -106,9 +107,11 @@ class Reporter( object ):
             tipo = self.__translate_type(tra.t_type)
             data.append([tra.date, tipo.upper(), tra.account,
                 '$%.2f' % tra.amount, tra.description])
+        
+        data1 = data[0:26]
 
-        self.l -= len(data) * 19
-        t = Table(data)
+        self.l -= len(data1) * 19
+        t = Table(data1)
         t.setStyle(TableStyle([('INNERGRID', (0,0), (-1,-1), 0.25, black),
             ('BOX', (0,0), (-1,-1), 0.25, black),
             ('FONTNAME', (0,0), (-1,0), 'Courier-Bold'),
@@ -119,6 +122,26 @@ class Reporter( object ):
             ('FONTNAME', (0,1), (-1,-1), 'Courier')]))
         t.wrapOn(self.c, 30, self.l)
         t.drawOn(self.c, 30, self.l)
+
+        if len(data) > 26:
+            data2 = data[27:-1]
+            p = PageBreak()
+            p.drawOn(self.c, 0, 1000)
+            self.c.showPage()
+
+            self.l = 800 - (len(data2) * 19)
+
+            t2 = Table([data1[0]] + data2)
+            t2.setStyle(TableStyle([('INNERGRID', (0,0), (-1,-1), 0.25, black),
+                ('BOX', (0,0), (-1,-1), 0.25, black),
+                ('FONTNAME', (0,0), (-1,0), 'Courier-Bold'),
+                ('BACKGROUND', (0,0), (-1,0), HexColor('#efeded')),
+                ('BACKGROUND', (0,0), (0,-1), HexColor('#efeded')),
+                ('FONTSIZE', (0,0), (-1,0), 12),
+                ('FONTSIZE', (0,1), (-1,-1), 8),
+                ('FONTNAME', (0,1), (-1,-1), 'Courier')]))
+            t2.wrapOn(self.c, 30, self.l)
+            t2.drawOn(self.c, 30, self.l)
 
     def __add_graph(self):
         drawing = Drawing(200, 100)
@@ -179,7 +202,7 @@ class Reporter( object ):
         self.__prepare_document()
         self.__generate_header()
         self.__accounts_amount()
-        self.__transactions()
         self.__add_graph()
+        self.__transactions()
         self.c.showPage()
         self.c.save()
