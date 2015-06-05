@@ -13,8 +13,6 @@ app.config.from_object(__name__)
 def get_report():
     d = daemon.BuxferDaemon()
 
-    import ipdb;ipdb.set_trace()
-
     if request.args.get('email') == '1':
         d.send_report(http=False)
     else:
