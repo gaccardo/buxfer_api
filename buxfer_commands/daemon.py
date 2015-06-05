@@ -44,12 +44,12 @@ class BuxferDaemon( BuxferCommand ):
             msg.as_string())
         server.close()
 
-    def send_report(self):
+    def send_report(self, http=False):
         connection = self.do_connect()
         accounts = connection.get_accounts()
         transactions = connection.get_transactions()
         reporter = Reporter(accounts, transactions)
         reporter.generate_report()
 
-        if settings.SEND_EMAIL:
+        if settings.SEND_EMAIL and not http:
             self.__send_pdf()
