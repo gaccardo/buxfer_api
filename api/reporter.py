@@ -159,28 +159,6 @@ class Reporter( object ):
             t2.wrapOn(self.c, 30, self.l)
             t2.drawOn(self.c, 30, self.l)
 
-        """
-        if len(data) > 26:
-            data2 = data[27:-1]
-            p = PageBreak()
-            p.drawOn(self.c, 0, 1000)
-            self.c.showPage()
-
-            self.l = 800 - (len(data2) * 19)
-
-            t2 = Table([data1[0]] + data2)
-            t2.setStyle(TableStyle([('INNERGRID', (0,0), (-1,-1), 0.25, black),
-                ('BOX', (0,0), (-1,-1), 0.25, black),
-                ('FONTNAME', (0,0), (-1,0), 'Courier-Bold'),
-                ('BACKGROUND', (0,0), (-1,0), HexColor('#efeded')),
-                ('BACKGROUND', (0,0), (0,-1), HexColor('#efeded')),
-                ('FONTSIZE', (0,0), (-1,0), 12),
-                ('FONTSIZE', (0,1), (-1,-1), 8),
-                ('FONTNAME', (0,1), (-1,-1), 'Courier')]))
-            t2.wrapOn(self.c, 30, self.l)
-            t2.drawOn(self.c, 30, self.l)
-        """
-
     def __add_graph(self):
         drawing = Drawing(200, 100)
         data = list()
