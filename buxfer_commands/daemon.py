@@ -51,5 +51,5 @@ class BuxferDaemon( BuxferCommand ):
         reporter = Reporter(accounts, transactions)
         reporter.generate_report()
 
-        if settings.SEND_EMAIL or not http:
+        if settings.SEND_EMAIL and not http:
             self.__send_pdf()
