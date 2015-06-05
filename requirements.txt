@@ -1,4 +1,7 @@
-reportlab
-pybles
-requests
-ipdb
+blessings==1.6
+ipdb==0.8.1
+ipython==3.1.0
+Pillow==2.8.1
+Pybles==1.0.12
+reportlab==3.2.0
+requests==2.7.0
