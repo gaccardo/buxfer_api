@@ -57,8 +57,6 @@ class Reporter( object ):
 
         self.l = 630
         
-        #decrease = 15
-        #self.c.setFont('Courier', 11)
         for acc in self.accounts:
             data.append([acc.name, acc.currency, 
                 '$%.2f' % acc.balance])
@@ -79,15 +77,25 @@ class Reporter( object ):
         self.l -= 20
         self.c.setFont('Courier', 14)
         self.c.drawString(30, self.l, 'Totales por moneda')
-        self.l -= 17
-        self.c.setFont('Courier', 11)
+        self.l -= 63
+        data2 = [['Moneda', 'Saldo']]
 
         totals = self.__get_totals_by_currency()
-        decrease = 15
         for currency, amount in totals.iteritems():
-            self.c.drawString(35, self.l, '%s: $%.2f' % \
-                (currency, amount))
-            self.l -= decrease
+            data2.append([currency, amount])
+
+        t2 = Table(data2)
+        t2.setStyle(TableStyle([('INNERGRID', (0,0), (-1,-1), 0.25, black),
+            ('BOX', (0,0), (-1,-1), 0.25, black),
+            ('FONTNAME', (0,0), (-1,0), 'Courier-Bold'),
+            ('BACKGROUND', (0,0), (-1,0), HexColor('#efeded')),
+            ('BACKGROUND', (0,0), (0,-1), HexColor('#efeded')),
+            ('FONTSIZE', (0,0), (-1,0), 12),
+            ('FONTSIZE', (0,1), (-1,-1), 8),
+            ('FONTNAME', (0,1), (-1,-1), 'Courier')]))
+
+        t2.wrapOn(self.c, 30, self.l)
+        t2.drawOn(self.c, 30, self.l)
 
     def __translate_type(self, tipo):
         types = dict()
@@ -110,7 +118,7 @@ class Reporter( object ):
             data.append([tra.date, tipo.upper(), tra.account,
                 '$%.2f' % tra.amount, tra.description])
 
-        registros = 27
+        registros = 24
         filas = len(data) / float(registros)
         coheficiente = math.ceil(len(data) / filas)
         look = 0
