@@ -248,19 +248,20 @@ class Reporter( object ):
 
             header = ['Fecha', 'Tipo', 'Monto', 'Description']
             data   = [header]
+            g_data = list()
+            g_labe = list()
 
             for tra in self.transactions:
                 if tra.account == acc.name:
                     tipo = self.__translate_type(tra.t_type)
                     data.append([tra.date, tipo.upper(),
                         tra.amount, tra.description])
-
-            #import ipdb;ipdb.set_trace()
+                    g_data.append(tra.amount)
+                    g_labe.append(tra.description.encode('utf-8'))
 
             from_title = 35
             if len(data) != 2:
                 self.l -= ((len(data) * len(data)) + len(data)) + from_title
-                print len(data), self.l
 
             t = Table(data)
             t.setStyle(TableStyle([('INNERGRID', (0,0), (-1,-1), 0.25, black),
@@ -273,6 +274,53 @@ class Reporter( object ):
                 ('FONTNAME', (0,1), (-1,-1), 'Courier')]))
             t.wrapOn(self.c, 30, self.l)
             t.drawOn(self.c, 30, self.l)
+
+            drawing = Drawing(200, 100)
+            data = list()
+            labels = list()
+
+            pie = Pie()
+            pie.x = 30
+            pie.y = self.l - 130
+            pie.height = 100
+            pie.width = 100
+            pie.data = g_data
+            pie.labels = g_labe
+            pie.simpleLabels = 1
+            pie.slices.strokeWidth = 1
+            pie.slices.strokeColor = white
+            pie.slices.label_visible = 0
+
+            legend = Legend()
+            legend.x = 150
+            legend.y = self.l - 100
+            legend.dx              = 8
+            legend.dy              = 8
+            legend.fontName        = 'Helvetica'
+            legend.fontSize        = 7
+            legend.boxAnchor       = 'w'
+            legend.columnMaximum   = 10
+            legend.strokeWidth     = 1
+            legend.strokeColor     = black
+            legend.deltax          = 75
+            legend.deltay          = 10
+            legend.autoXPadding    = 5
+            legend.yGap            = 0
+            legend.dxTextSpace     = 5
+            legend.alignment       = 'right'
+            legend.dividerLines    = 1|2|4
+            legend.dividerOffsY    = 4.5
+            legend.subCols.rpad    = 30
+            n = len(pie.data)
+
+            legend.colorNamePairs = [(pie.slices[i].fillColor, 
+                (pie.labels[i][0:20],'$%0.2f' % pie.data[i])) for i in xrange(n)]
+
+            drawing.add(pie)
+            drawing.add(legend)
+            x, y = 0, 10
+            renderPDF.draw(drawing, self.c, x, y, showBoundary=False)
+
 
     def generate_report(self):
         self.__prepare_document()
