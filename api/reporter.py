@@ -251,16 +251,20 @@ class Reporter( object ):
             data   = [header]
             g_data = list()
             g_labe = list()
+            total  = 0
 
             for tra in self.transactions:
                 if tra.account == acc.name:
-                    tipo = self.__translate_type(tra.t_type)
-                    data.append([tra.date, tipo.upper(),
-                        tra.amount, tra.description])
-
                     if tra.t_type in ['expense', 'transfer']:
+                        tipo = self.__translate_type(tra.t_type)
+                        data.append([tra.date, tipo.upper(),
+                            '$%2.f' % tra.amount, tra.description])
+                        total += tra.amount
+
                         g_data.append(tra.amount)
                         g_labe.append(tra.description.encode('utf-8'))
+
+            data.append(['TOTAL', '', '$%.2f' % total, ''])
 
             if len(g_data) == 0 or len(g_labe) == 0:
                 self.c.setFont('Courier', 12)
@@ -279,7 +283,10 @@ class Reporter( object ):
                 ('BACKGROUND', (0,0), (0,-1), HexColor('#efeded')),
                 ('FONTSIZE', (0,0), (-1,0), 12),
                 ('FONTSIZE', (0,1), (-1,-1), 8),
-                ('FONTNAME', (0,1), (-1,-1), 'Courier')]))
+                ('FONTNAME', (0,1), (-1,-1), 'Courier'),
+                ('BACKGROUND', (0,-1), (-1,-1), red),
+                ('TEXTCOLOR', (0,-1), (-1,-1), white)]))
+
             t.wrapOn(self.c, 30, self.l)
             t.drawOn(self.c, 30, self.l)
 
