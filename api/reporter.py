@@ -236,6 +236,7 @@ class Reporter( object ):
         renderPDF.draw(drawing, self.c, x, y, showBoundary=False)
 
     def __per_account_statistic(self):
+
         for acc in self.accounts:
             p = PageBreak()
             p.drawOn(self.c, 0, 1000)
@@ -256,9 +257,16 @@ class Reporter( object ):
                     tipo = self.__translate_type(tra.t_type)
                     data.append([tra.date, tipo.upper(),
                         tra.amount, tra.description])
-                    g_data.append(tra.amount)
-                    g_labe.append(tra.description.encode('utf-8'))
 
+                    if tra.t_type in ['expense', 'transfer']:
+                        g_data.append(tra.amount)
+                        g_labe.append(tra.description.encode('utf-8'))
+
+            if len(g_data) == 0 or len(g_labe) == 0:
+                self.c.setFont('Courier', 12)
+                self.c.drawString(30, 770, 'Sin movimientos negativos')
+                continue
+ 
             from_title = 35
             if len(data) != 2:
                 self.l -= ((len(data) * len(data)) + len(data)) + from_title
@@ -276,8 +284,8 @@ class Reporter( object ):
             t.drawOn(self.c, 30, self.l)
 
             drawing = Drawing(200, 100)
-            data = list()
-            labels = list()
+            #data = list()
+            #labels = list()
 
             pie = Pie()
             pie.x = 30
@@ -319,8 +327,8 @@ class Reporter( object ):
             drawing.add(pie)
             drawing.add(legend)
             x, y = 0, 10
-            renderPDF.draw(drawing, self.c, x, y, showBoundary=False)
 
+            renderPDF.draw(drawing, self.c, x, y, showBoundary=False)
 
     def generate_report(self):
         self.__prepare_document()
