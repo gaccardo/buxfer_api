@@ -181,6 +181,9 @@ class Reporter( object ):
         data = list()
         labels = list()
 
+        self.c.drawString(370, 730, 
+            'Distribucion en pesos'.encode('utf-8'))
+
         for acc in self.accounts:
             balance = acc.balance
             if acc.currency == 'USD':
