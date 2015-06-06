@@ -235,11 +235,51 @@ class Reporter( object ):
         x, y = 0, 0
         renderPDF.draw(drawing, self.c, x, y, showBoundary=False)
 
+    def __per_account_statistic(self):
+        for acc in self.accounts:
+            p = PageBreak()
+            p.drawOn(self.c, 0, 1000)
+            self.c.showPage()
+            self.l = 760
+
+            self.c.setFont('Courier', 14)
+            self.c.drawString(30, 800, 'Cuenta: %s' % \
+                acc.name)
+
+            header = ['Fecha', 'Tipo', 'Monto', 'Description']
+            data   = [header]
+
+            for tra in self.transactions:
+                if tra.account == acc.name:
+                    tipo = self.__translate_type(tra.t_type)
+                    data.append([tra.date, tipo.upper(),
+                        tra.amount, tra.description])
+
+            #import ipdb;ipdb.set_trace()
+
+            from_title = 35
+            if len(data) != 2:
+                self.l -= ((len(data) * len(data)) + len(data)) + from_title
+                print len(data), self.l
+
+            t = Table(data)
+            t.setStyle(TableStyle([('INNERGRID', (0,0), (-1,-1), 0.25, black),
+                ('BOX', (0,0), (-1,-1), 0.25, black),
+                ('FONTNAME', (0,0), (-1,0), 'Courier-Bold'),
+                ('BACKGROUND', (0,0), (-1,0), HexColor('#efeded')),
+                ('BACKGROUND', (0,0), (0,-1), HexColor('#efeded')),
+                ('FONTSIZE', (0,0), (-1,0), 12),
+                ('FONTSIZE', (0,1), (-1,-1), 8),
+                ('FONTNAME', (0,1), (-1,-1), 'Courier')]))
+            t.wrapOn(self.c, 30, self.l)
+            t.drawOn(self.c, 30, self.l)
+
     def generate_report(self):
         self.__prepare_document()
         self.__generate_header()
         self.__accounts_amount()
         self.__add_graph()
         self.__transactions()
+        self.__per_account_statistic()
         self.c.showPage()
         self.c.save()
