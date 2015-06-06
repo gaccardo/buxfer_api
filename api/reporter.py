@@ -14,6 +14,7 @@ from reportlab.platypus import PageBreak
 import datetime
 
 import settings
+from currency_calculator import CurrencyCalculator
 
 class Reporter( object ):
 
@@ -22,6 +23,13 @@ class Reporter( object ):
         self.transactions = transactions
         self.c            = None
         self.l            = 800
+
+        cc = CurrencyCalculator()
+        self.dolar = None
+        try:
+            self.dolar = cc.get_dolar()['real']
+        except:
+            self.dolar = settings.DOLAR
 
     def __prepare_document(self):
         file_path = os.path.join(settings.REPORT_TMP, 
@@ -37,6 +45,7 @@ class Reporter( object ):
         hoy = hoy.strftime('%d/%m/%Y')
 
         self.c.drawString(30, 780, 'Fecha: %s' % hoy)
+        self.c.drawString(495, 780, 'Dolar: $%.2f' % self.dolar)
         self.c.line(20,775,580,775)
 
     def __get_totals_by_currency(self):
@@ -175,9 +184,9 @@ class Reporter( object ):
         for acc in self.accounts:
             balance = acc.balance
             if acc.currency == 'USD':
-                balance = balance * settings.DOLAR
+                balance = balance * self.dolar
 
-            data.append(acc.balance)
+            data.append(balance)
             labels.append(acc.name)
 
         pie = Pie()
@@ -213,6 +222,7 @@ class Reporter( object ):
         legend.dividerOffsY    = 4.5
         legend.subCols.rpad    = 30
         n = len(pie.data)
+
         legend.colorNamePairs = [(pie.slices[i].fillColor, 
             (pie.labels[i][0:20],'$%0.2f' % pie.data[i])) for i in xrange(n)]
 
