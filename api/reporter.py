@@ -14,6 +14,7 @@ from reportlab.platypus import PageBreak
 import datetime
 
 import settings
+from currency_calculator import CurrencyCalculator
 
 class Reporter( object ):
 
@@ -22,6 +23,13 @@ class Reporter( object ):
         self.transactions = transactions
         self.c            = None
         self.l            = 800
+
+        cc = CurrencyCalculator()
+        self.dolar = None
+        try:
+            self.dolar = cc.get_dolar()['real']
+        except:
+            self.dolar = settings.DOLAR
 
     def __prepare_document(self):
         file_path = os.path.join(settings.REPORT_TMP, 
@@ -37,6 +45,7 @@ class Reporter( object ):
         hoy = hoy.strftime('%d/%m/%Y')
 
         self.c.drawString(30, 780, 'Fecha: %s' % hoy)
+        self.c.drawString(495, 780, 'Dolar: $%.2f' % self.dolar)
         self.c.line(20,775,580,775)
 
     def __get_totals_by_currency(self):
@@ -57,8 +66,6 @@ class Reporter( object ):
 
         self.l = 630
         
-        #decrease = 15
-        #self.c.setFont('Courier', 11)
         for acc in self.accounts:
             data.append([acc.name, acc.currency, 
                 '$%.2f' % acc.balance])
@@ -79,15 +86,25 @@ class Reporter( object ):
         self.l -= 20
         self.c.setFont('Courier', 14)
         self.c.drawString(30, self.l, 'Totales por moneda')
-        self.l -= 17
-        self.c.setFont('Courier', 11)
+        self.l -= 63
+        data2 = [['Moneda', 'Saldo']]
 
         totals = self.__get_totals_by_currency()
-        decrease = 15
         for currency, amount in totals.iteritems():
-            self.c.drawString(35, self.l, '%s: $%.2f' % \
-                (currency, amount))
-            self.l -= decrease
+            data2.append([currency, amount])
+
+        t2 = Table(data2)
+        t2.setStyle(TableStyle([('INNERGRID', (0,0), (-1,-1), 0.25, black),
+            ('BOX', (0,0), (-1,-1), 0.25, black),
+            ('FONTNAME', (0,0), (-1,0), 'Courier-Bold'),
+            ('BACKGROUND', (0,0), (-1,0), HexColor('#efeded')),
+            ('BACKGROUND', (0,0), (0,-1), HexColor('#efeded')),
+            ('FONTSIZE', (0,0), (-1,0), 12),
+            ('FONTSIZE', (0,1), (-1,-1), 8),
+            ('FONTNAME', (0,1), (-1,-1), 'Courier')]))
+
+        t2.wrapOn(self.c, 30, self.l)
+        t2.drawOn(self.c, 30, self.l)
 
     def __translate_type(self, tipo):
         types = dict()
@@ -110,7 +127,7 @@ class Reporter( object ):
             data.append([tra.date, tipo.upper(), tra.account,
                 '$%.2f' % tra.amount, tra.description])
 
-        registros = 27
+        registros = 24
         filas = len(data) / float(registros)
         coheficiente = math.ceil(len(data) / filas)
         look = 0
@@ -164,12 +181,15 @@ class Reporter( object ):
         data = list()
         labels = list()
 
+        self.c.drawString(370, 730, 
+            'Distribucion en pesos'.encode('utf-8'))
+
         for acc in self.accounts:
             balance = acc.balance
             if acc.currency == 'USD':
-                balance = balance * settings.DOLAR
+                balance = balance * self.dolar
 
-            data.append(acc.balance)
+            data.append(balance)
             labels.append(acc.name)
 
         pie = Pie()
@@ -205,6 +225,7 @@ class Reporter( object ):
         legend.dividerOffsY    = 4.5
         legend.subCols.rpad    = 30
         n = len(pie.data)
+
         legend.colorNamePairs = [(pie.slices[i].fillColor, 
             (pie.labels[i][0:20],'$%0.2f' % pie.data[i])) for i in xrange(n)]
 
