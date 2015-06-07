@@ -71,7 +71,8 @@ class BuxferAPI( object ):
                 expense=tra['expenseAmount'],
                 amount=tra['amount'],
                 t_type=tra['transactionType'],
-                date=tra['normalizedDate']))
+                date=tra['normalizedDate'],
+                tags=tra['tagNames']))
 
         return transactions_list
 
