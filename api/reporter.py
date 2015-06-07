@@ -310,19 +310,22 @@ class Reporter( object ):
 
             pie = Pie()
             pie.x = 30
-            pie.y = self.l - 130
-            pie.height = 100
-            pie.width = 100
+            pie.y = self.l - 300
+            pie.height = 200
+            pie.width = 200
             pie.data = g_data
             pie.labels = g_labe
             pie.simpleLabels = 1
             pie.slices.strokeWidth = 1
             pie.slices.strokeColor = black
             pie.slices.label_visible = 0
+            pie.slices.popout        = 1
+            #pie.labels   = map(str, pie.data)
 
+            
             legend = Legend()
-            legend.x = 150
-            legend.y = self.l - 100
+            legend.x = 250
+            legend.y = self.l - 250
             legend.dx              = 8
             legend.dy              = 8
             legend.fontName        = 'Helvetica'
@@ -346,6 +349,7 @@ class Reporter( object ):
 
             legend.colorNamePairs = [(pie.slices[i].fillColor, 
                 (pie.labels[i][0:20],'$%0.2f' % pie.data[i])) for i in xrange(n)]
+            
 
             drawing.add(pie)
             drawing.add(legend)
