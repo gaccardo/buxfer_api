@@ -31,6 +31,20 @@ class Reporter( object ):
         except:
             self.dolar = settings.DOLAR
 
+        self.pdf_chart_colors = [
+            HexColor("#0000e5"),
+            HexColor("#1f1feb"),
+            HexColor("#5757f0"),
+            HexColor("#8f8ff5"),
+            HexColor("#c7c7fa"),
+            HexColor("#f5c2c2"),
+            HexColor("#eb8585"),
+            HexColor("#e04747"),
+            HexColor("#d60a0a"),
+            HexColor("#cc0000"),
+            HexColor("#ff0000"),
+        ]
+
     def __prepare_document(self):
         file_path = os.path.join(settings.REPORT_TMP, 
             settings.REPORT_NAME)
@@ -201,7 +215,7 @@ class Reporter( object ):
         pie.labels = labels
         pie.simpleLabels = 1
         pie.slices.strokeWidth = 1
-        pie.slices.strokeColor = white
+        pie.slices.strokeColor = black
         pie.slices.label_visible = 0
 
         legend = Legend()
@@ -225,6 +239,8 @@ class Reporter( object ):
         legend.dividerOffsY    = 4.5
         legend.subCols.rpad    = 30
         n = len(pie.data)
+        self.__setItems(n,pie.slices,
+            'fillColor',self.pdf_chart_colors)
 
         legend.colorNamePairs = [(pie.slices[i].fillColor, 
             (pie.labels[i][0:20],'$%0.2f' % pie.data[i])) for i in xrange(n)]
@@ -291,8 +307,6 @@ class Reporter( object ):
             t.drawOn(self.c, 30, self.l)
 
             drawing = Drawing(200, 100)
-            #data = list()
-            #labels = list()
 
             pie = Pie()
             pie.x = 30
@@ -303,7 +317,7 @@ class Reporter( object ):
             pie.labels = g_labe
             pie.simpleLabels = 1
             pie.slices.strokeWidth = 1
-            pie.slices.strokeColor = white
+            pie.slices.strokeColor = black
             pie.slices.label_visible = 0
 
             legend = Legend()
@@ -327,6 +341,8 @@ class Reporter( object ):
             legend.dividerOffsY    = 4.5
             legend.subCols.rpad    = 30
             n = len(pie.data)
+            self.__setItems(n,pie.slices,
+                'fillColor',self.pdf_chart_colors)
 
             legend.colorNamePairs = [(pie.slices[i].fillColor, 
                 (pie.labels[i][0:20],'$%0.2f' % pie.data[i])) for i in xrange(n)]
@@ -337,12 +353,87 @@ class Reporter( object ):
 
             renderPDF.draw(drawing, self.c, x, y, showBoundary=False)
 
+    def __setItems(self, n, obj, attr, values):
+        m = len(values)
+        i = m // n
+        for j in xrange(n):
+            setattr(obj[j],attr,values[j*i % m])
+
+    def __get_tags_statistics(self):
+        monto_categorias = dict()
+        for tra in self.transactions:
+            if len(tra.tags) > 0:
+                for tag in tra.tags:
+                    if tag in monto_categorias.keys():
+                        monto_categorias[tag] += tra.amount
+                    else:
+                        monto_categorias[tag] = tra.amount
+
+        labels = monto_categorias.keys()
+        data = monto_categorias.values()
+
+        p = PageBreak()
+        p.drawOn(self.c, 0, 1000)
+        self.c.showPage()
+        self.l = 600
+
+        self.c.setFont('Courier', 14)
+        self.c.drawString(30, 800, 'Categorias')
+
+        drawing = Drawing(200, 200)
+
+        pie = Pie()
+        pie.x = 30
+        pie.y = self.l - 130
+        pie.height = 300
+        pie.width = 300
+        pie.data = data
+        pie.labels = labels
+        pie.simpleLabels = 1
+        pie.slices.strokeWidth = 1
+        pie.slices.strokeColor = black
+        pie.slices.label_visible = 0
+
+        legend = Legend()
+        legend.x = 400
+        legend.y = self.l
+        legend.dx              = 8
+        legend.dy              = 8
+        legend.fontName        = 'Helvetica'
+        legend.fontSize        = 7
+        legend.boxAnchor       = 'w'
+        legend.columnMaximum   = 10
+        legend.strokeWidth     = 1
+        legend.strokeColor     = black
+        legend.deltax          = 75
+        legend.deltay          = 10
+        legend.autoXPadding    = 5
+        legend.yGap            = 0
+        legend.dxTextSpace     = 5
+        legend.alignment       = 'right'
+        legend.dividerLines    = 1|2|4
+        legend.dividerOffsY    = 4.5
+        legend.subCols.rpad    = 30
+        n = len(pie.data)
+        self.__setItems(n,pie.slices,
+            'fillColor',self.pdf_chart_colors)
+
+        legend.colorNamePairs = [(pie.slices[i].fillColor, 
+            (pie.labels[i][0:20],'$%0.2f' % pie.data[i])) for i in xrange(n)]
+
+        drawing.add(pie)
+        drawing.add(legend)
+        x, y = 0, 10
+
+        renderPDF.draw(drawing, self.c, x, y, showBoundary=False)
+
     def generate_report(self):
         self.__prepare_document()
         self.__generate_header()
         self.__accounts_amount()
         self.__add_graph()
         self.__transactions()
+        self.__get_tags_statistics()
         self.__per_account_statistic()
         self.c.showPage()
         self.c.save()
