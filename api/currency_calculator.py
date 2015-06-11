@@ -27,3 +27,9 @@ class CurrencyCalculator( object ):
 
         return {'compra': compra_raw, 'venta': venta_raw,
                 'promedio': promedio, 'real': promedio-0.10}
+
+
+# Test
+if __name__ == '__main__':
+    CC = CurrencyCalculator()
+    print CC.get_dolar()
