@@ -5,51 +5,47 @@ import settings
 
 class CurrencyCalculator( object ):
 
-    def get_dolar_from_argentinadolar(self):
-        url = "http://argentinadolar.com/"
-
+    def __get_dom(self, url):
         site = urllib2.urlopen(url)
         data = site.read()
         site.close()
 
-        dom = htmldom.HtmlDom().createDom(data)
+        return htmldom.HtmlDom().createDom(data)
 
-        compra_raw = dom.domNodes['h3'][2].getText()
-        compra_raw = compra_raw.split('$\n')[-1]
-        compra_raw = compra_raw.replace(',','.')
-        compra_raw = float(compra_raw)
-
-        venta_raw = dom.domNodes['h3'][3].getText()
-        venta_raw = venta_raw.split('$\n')[-1]
-        venta_raw = venta_raw.replace(',','.')
-        venta_raw = float(venta_raw)
-
-        promedio = (compra_raw + venta_raw) / 2
+    def __return_data(self, compra, venta):
+        promedio = (compra + venta) / 2
         promedio = float('%.2f' % promedio)
 
-        return {'compra': compra_raw, 'venta': venta_raw,
+        return {'compra': compra, 'venta': venta,
                 'promedio': promedio, 'real': promedio-0.10}
+
+    def get_dolar_from_argentinadolar(self):
+        url = "http://argentinadolar.com/"
+        dom = self.__get_dom(url)
+
+        compra = dom.domNodes['h3'][2].getText()
+        compra = compra.split('$\n')[-1]
+        compra = compra.replace(',','.')
+        compra = float(compra)
+
+        venta = dom.domNodes['h3'][3].getText()
+        venta = venta.split('$\n')[-1]
+        venta = venta.replace(',','.')
+        venta = float(venta)
+
+        return self.__return_data(compra, venta)
 
     def get_dolar_from_dolarblue(self):
         url = "http://www.preciodolarblue.com.ar/"
+        dom = self.__get_dom(url)
 
-        site = urllib2.urlopen(url)
-        data = site.read()
-        site.close()
+        compra = dom.domNodes['td'][3].getText()
+        compra = float(compra)
 
-        dom = htmldom.HtmlDom().createDom(data)
+        venta = dom.domNodes['td'][4].getText()
+        venta = float(venta) 
 
-        compra_raw = dom.domNodes['td'][3].getText()
-        compra_raw = float(compra_raw)
-
-        venta_raw = dom.domNodes['td'][4].getText()
-        venta_raw = float(venta_raw) 
-
-        promedio = (compra_raw + venta_raw) / 2
-        promedio = float('%.2f' % promedio)
-
-        return {'compra': compra_raw, 'venta': venta_raw,
-                'promedio': promedio, 'real': promedio-0.10}
+        return self.__return_data(compra, venta)
 
     def get_dolar(self):
         dolar = getattr(self, 
