@@ -6,8 +6,8 @@ class Account( object ):
         self.currency = currency
         self.balance  = balance
         self.id       = id
-        self.bank     = bank
-        self.name     = name
+        self.bank     = bank.encode('utf-8')
+        self.name     = name.encode('utf-8')
 
     def __str__(self):
         string = "<Account(currency=%s, balance=%s, id=%s, " % \
