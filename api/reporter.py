@@ -373,7 +373,7 @@ class Reporter( object ):
                     else:
                         monto_categorias[tag] = tra.amount
 
-        labels = monto_categorias.keys()
+        labels = [lab.encode('utf-8') for lab in monto_categorias.keys()]
         data = monto_categorias.values()
 
         p = PageBreak()
