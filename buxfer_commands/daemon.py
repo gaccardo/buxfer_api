@@ -48,6 +48,9 @@ class BuxferDaemon( BuxferCommand ):
         connection = self.do_connect()
         accounts = connection.get_accounts()
         transactions = connection.get_transactions()
+        import ipdb;ipdb.set_trace()
+        budgets = connection.get_budgets()
+        #reminders = connection.get_reminders()
         reporter = Reporter(accounts, transactions)
         reporter.generate_report()
 
