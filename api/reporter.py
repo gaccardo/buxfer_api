@@ -18,9 +18,10 @@ from currency_calculator import CurrencyCalculator
 
 class Reporter( object ):
 
-    def __init__(self, accounts, transactions):
-        self.accounts     = accounts
-        self.transactions = transactions
+    def __init__(self, data):
+        self.accounts     = data['accounts']
+        self.transactions = data['transactions']
+        self.budgets      = data['budgets']
         self.c            = None
         self.l            = 800
 

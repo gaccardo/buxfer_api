@@ -86,7 +86,6 @@ class BuxferAPI( object ):
 
     def get_transactions(self):
         response = self.__get_request('transactions')
-        #import ipdb;ipdb.set_trace()
         return self.__from_json_transactions_to_objects(response)
 
     def __from_json_reminder_to_objects(self, reminders):
