@@ -22,6 +22,7 @@ class Reporter( object ):
         self.accounts     = data['accounts']
         self.transactions = data['transactions']
         self.budgets      = data['budgets']
+        self.reminders    = data['reminders']
         self.c            = None
         self.l            = 800
 
