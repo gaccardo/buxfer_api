@@ -49,10 +49,10 @@ class BuxferDaemon( BuxferCommand ):
         accounts = connection.get_accounts()
         transactions = connection.get_transactions()
         budgets = connection.get_budgets()
-        #reminders = connection.get_reminders()
+        reminders = connection.get_reminders()
         data = {'transactions': transactions,
             'accounts': accounts, 'budgets': budgets,
-            'reminders': None}
+            'reminders': reminders}
         reporter = Reporter(data=data)
         reporter.generate_report()
 
