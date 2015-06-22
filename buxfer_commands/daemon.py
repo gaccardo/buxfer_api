@@ -48,7 +48,12 @@ class BuxferDaemon( BuxferCommand ):
         connection = self.do_connect()
         accounts = connection.get_accounts()
         transactions = connection.get_transactions()
-        reporter = Reporter(accounts, transactions)
+        budgets = connection.get_budgets()
+        reminders = connection.get_reminders()
+        data = {'transactions': transactions,
+            'accounts': accounts, 'budgets': budgets,
+            'reminders': reminders}
+        reporter = Reporter(data=data)
         reporter.generate_report()
 
         if settings.SEND_EMAIL and not http:

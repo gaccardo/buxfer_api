@@ -18,9 +18,11 @@ from currency_calculator import CurrencyCalculator
 
 class Reporter( object ):
 
-    def __init__(self, accounts, transactions):
-        self.accounts     = accounts
-        self.transactions = transactions
+    def __init__(self, data):
+        self.accounts     = data['accounts']
+        self.transactions = data['transactions']
+        self.budgets      = data['budgets']
+        self.reminders    = data['reminders']
         self.c            = None
         self.l            = 800
 
@@ -431,6 +433,65 @@ class Reporter( object ):
 
         renderPDF.draw(drawing, self.c, x, y, showBoundary=False)
 
+    def __budgets_spent(self):
+        self.l = 800
+        p = PageBreak()
+        p.drawOn(self.c, 0, 1000)
+        self.c.showPage()
+
+        self.c.setFont('Courier', 14)
+        self.c.drawString(30, self.l, 'Budgets')
+
+        header = ['Nombre', 'Gastado', 'Balance', 'Limite']
+        data = [header]
+
+        for bud in self.budgets:
+            data.append([bud.name, bud.spent,
+                bud.balance, bud.limit])
+
+        self.l -= len(data) * 19
+        t = Table(data)
+        t.setStyle(TableStyle([('INNERGRID', (0,0), (-1,-1), 0.25, black),
+            ('BOX', (0,0), (-1,-1), 0.25, black),
+            ('FONTNAME', (0,0), (-1,0), 'Courier-Bold'),
+            ('BACKGROUND', (0,0), (-1,0), HexColor('#efeded')),
+            ('BACKGROUND', (0,0), (0,-1), HexColor('#efeded')),
+            ('FONTSIZE', (0,0), (-1,0), 12),
+            ('FONTSIZE', (0,1), (-1,-1), 8),
+            ('FONTNAME', (0,1), (-1,-1), 'Courier')]))
+        t.wrapOn(self.c, 30, self.l)
+        t.drawOn(self.c, 30, self.l)
+
+    def __reminders(self):
+        self.l = 800
+        p = PageBreak()
+        p.drawOn(self.c, 0, 1000)
+        self.c.showPage()
+
+        self.c.setFont('Courier', 14)
+        self.c.drawString(30, self.l, 'Recordatorio de pagos')
+
+        header = ['Fecha', 'Descripcion', 'Monto']
+        data = [header]
+
+        for rem in self.reminders:
+            data.append([rem.start_date, rem.description,
+                rem.amount])
+
+        self.l -= len(data) * 19
+        t = Table(data)
+        t.setStyle(TableStyle([('INNERGRID', (0,0), (-1,-1), 0.25, black),
+            ('BOX', (0,0), (-1,-1), 0.25, black),
+            ('FONTNAME', (0,0), (-1,0), 'Courier-Bold'),
+            ('BACKGROUND', (0,0), (-1,0), HexColor('#efeded')),
+            ('BACKGROUND', (0,0), (0,-1), HexColor('#efeded')),
+            ('FONTSIZE', (0,0), (-1,0), 12),
+            ('FONTSIZE', (0,1), (-1,-1), 8),
+            ('FONTNAME', (0,1), (-1,-1), 'Courier')]))
+        t.wrapOn(self.c, 30, self.l)
+        t.drawOn(self.c, 30, self.l)
+
+
     def generate_report(self):
         self.__prepare_document()
         self.__generate_header()
@@ -439,5 +500,7 @@ class Reporter( object ):
         self.__transactions()
         self.__get_tags_statistics()
         self.__per_account_statistic()
+        self.__budgets_spent()
+        self.__reminders()
         self.c.showPage()
         self.c.save()

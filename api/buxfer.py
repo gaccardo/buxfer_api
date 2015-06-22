@@ -5,6 +5,8 @@ from pybles import pybles
 
 from account import Account
 from transaction import Transaction
+from budget import Budget
+from reminder import Reminder
 
 requests.packages.urllib3.disable_warnings()
 
@@ -26,6 +28,13 @@ class BuxferAPI( object ):
         response = requests.get(url)
 
         if response.status_code == 400:
+            error = response.json()
+            error = error['error']
+            print "ERROR"
+            print "* Resource: %s" % resource
+            print "* Type: %s" % error['type']
+            print "* Request id: %d" % error['request_id']
+            print "* Message: %s" % error['message']
             raise BuxferAPIUnauthorized
 
         if response.status_code != 200:
@@ -78,5 +87,32 @@ class BuxferAPI( object ):
 
     def get_transactions(self):
         response = self.__get_request('transactions')
-        #import ipdb;ipdb.set_trace()
         return self.__from_json_transactions_to_objects(response)
+
+    def __from_json_reminder_to_objects(self, reminders):
+        reminders_list = list()
+        for rem in reminders['response']['reminders']:
+            rem = rem['key-reminder']
+            reminders_list.append(Reminder(start_date=rem['startDate'],
+                description=rem['description'], amount=rem['amount'],
+                id=rem['id'], account_id=['account_id']))
+
+        return reminders_list
+
+    def get_reminders(self):
+        response = self.__get_request('reminders')
+        return self.__from_json_reminder_to_objects(response)
+
+    def __from_json_budgets_to_objects(self, budgets):
+        budgets_list = list()
+        for bud in budgets['response']['budgets']:
+            bud = bud['key-budget']
+            budgets_list.append(Budget(name=bud['name'], 
+                spent=bud['spent'], limit=bud['limit'], 
+                balance=bud['balance']))
+
+        return budgets_list
+
+    def get_budgets(self):
+        response = self.__get_request('budgets')
+        return self.__from_json_budgets_to_objects(response)
