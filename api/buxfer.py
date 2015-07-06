@@ -58,7 +58,6 @@ class BuxferAPI( object ):
     def __from_json_accounts_to_objects(self, accounts):
         accounts_list = list()
         for acc in accounts['response']['accounts']:
-            acc = acc['key-account']
             accounts_list.append(Account(currency=acc['currency'],
                 balance=acc['balance'],
                 id=acc['id'],
@@ -74,7 +73,6 @@ class BuxferAPI( object ):
     def __from_json_transactions_to_objects(self, transactions):
         transactions_list = list()
         for tra in transactions['response']['transactions']:
-            tra = tra['key-transaction']
             transactions_list.append(Transaction(description=tra['description'],
                 account=tra['accountName'],
                 expense=tra['expenseAmount'],
@@ -92,7 +90,6 @@ class BuxferAPI( object ):
     def __from_json_reminder_to_objects(self, reminders):
         reminders_list = list()
         for rem in reminders['response']['reminders']:
-            rem = rem['key-reminder']
             reminders_list.append(Reminder(start_date=rem['startDate'],
                 description=rem['description'], amount=rem['amount'],
                 id=rem['id'], account_id=['account_id']))
@@ -106,7 +103,6 @@ class BuxferAPI( object ):
     def __from_json_budgets_to_objects(self, budgets):
         budgets_list = list()
         for bud in budgets['response']['budgets']:
-            bud = bud['key-budget']
             budgets_list.append(Budget(name=bud['name'], 
                 spent=bud['spent'], limit=bud['limit'], 
                 balance=bud['balance']))
